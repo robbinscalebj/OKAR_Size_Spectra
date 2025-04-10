@@ -16,8 +16,8 @@ inverts_int = inverts_full %>%
   select(site, event, month, year, sort, taxon_lifestage,
          code, count, matches("l\\d{1}"),matches("h\\d{1}"), length_a, length_b, head_a, head_b) %>% 
   rowwise %>% 
-  mutate(across(where(matches("l\\d{1}")), ~length_a*(.x^length_b))) %>% 
-  mutate(across(where(matches("h\\d{1}")), ))
+  mutate(across(matches("l\\d{1}"), ~length_a*(.x^length_b), .names = )) %>% 
+  mutate(across(matches("h\\d{1}"), ~head_a*(.x^head_b)))
   
   group_by(site, event, month, year, sort, taxon_lifestage, code, count, length_a, length_b, head_a, head_b) %>% 
   pivot_longer()
