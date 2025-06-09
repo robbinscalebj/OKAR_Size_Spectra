@@ -71,8 +71,12 @@ site_int_posts %>%
   mutate(site = case_when(parameter == 'b_Intercept' ~ 'BALL1',
                           .default = site)) %>% 
   ggplot()+
-  geom_density(aes(x = value, after_stat(scaled)), fill = 'lightgrey', alpha = 0.5)+
+  geom_vline(data = site_int_posts %>% summarise(value = mean(value)), aes(xintercept = value))+
+  geom_density(aes(x = value, after_stat(scaled)),trim = TRUE, fill = 'lightgrey', alpha = 0.5)+
   facet_wrap(~site)
+
+ggsave(filename = here::here('figures/site_int_posts.jpg'),
+       height = 6, width = 6)
                
 
 site_slope_posts <- dw_blmm %>% 
@@ -87,5 +91,9 @@ site_slope_posts %>%
   mutate(site = case_when(parameter == 'b_Intercept' ~ 'BALL1',
                           .default = site)) %>% 
   ggplot()+
-  geom_density(aes(x = value, after_stat(scaled)), fill = 'lightgrey', alpha = 0.5)+
+  geom_vline(data = site_slope_posts %>% summarise(value = mean(value)), aes(xintercept = value))+
+  geom_density(aes(x = value, after_stat(scaled)), trim = TRUE, fill = 'lightgrey', alpha = 0.5)+
   facet_wrap(~site)
+
+ggsave(filename = here::here('figures/site_slope_posts.jpg'),
+       height = 6, width = 6)
