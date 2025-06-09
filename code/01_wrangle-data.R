@@ -46,22 +46,25 @@ inverts_int = inverts_full %>%
          !grepl("*. \\(a\\)", taxon_lifestage)) %>% 
   select(site, event, month, year, sort, code, count, meas, flag, everything())
 
-extract_details = function(){
-  
-}
+set.seed(1312)
+inverts_int2 = 
+  extract_details(
+    inverts_int
+    ) 
+
+inverts_clean = inverts_int2 %>% 
+  select(site, event, month, year, code, taxon_lifestage,mass) %>% 
+  unnest(mass) %>% 
+  mutate(across(mass, ~round(.x,4))) %>% 
+  summarise(count = n(), .by = c('site','event','month','year', 'code','taxon_lifestage','mass'))
+# save the 
+saveRDS(inverts_clean, here('data/derived-data/inverts_clean.rds'))
 
 
-inverts_clean = inverts_int %>% 
-  named_group_split(site, event) 
-
-x= inverts_clean %>% pluck(1)
-
-
-
-extract_details
-  
-y = x %>% rowwise %>% mutate(masses = list(case_when(flag == '0' ~ na.omit(c_across(l1_dw:h10_dw)),
-                                                     flag == 'dn' ~ sample(na.omit(c_across(l1_dw:h10_dw)), size = count, replace = TRUE),
-                                                     flag == 'up' ~ na.omit(c_across(l1_dw:h10_dw)),
-                                                     flag == 'dn' & code == 'Chironom' ~ rlnorm(n = count, estimate_lnnorm(mean = 0.568)[1], estimate_lnnorm(mean = 0.568)[2]),
-                                                     .default = NA)))
+inverts_clean_dw = inverts_int2 %>% 
+  select(site, event, month, year, mass) %>% 
+  unnest(mass) %>% 
+  mutate(across(mass, ~round(.x,5))) %>% 
+  summarise(count = n(), .by = c('site','event','month','year','mass'))
+# save the 
+saveRDS(inverts_clean_dw, here('data/derived-data/inverts_clean_dw.rds'))
